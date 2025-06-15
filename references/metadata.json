@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-01-15T10:30:00Z",
+  "files": [
+    {
+      "id": "claude-princeton-resume",
+      "filename": "princeton-resume.tsx",
+      "path": "/references/claude/princeton-resume.tsx",
+      "ai": "claude",
+      "type": "react",
+      "title": "Princeton Resume Template",
+      "description": "Professional resume template based on Princeton University format",
+      "tags": ["resume", "template", "princeton"],
+      "createdAt": "2025-01-15T10:30:00Z",
+      "updatedAt": "2025-01-15T10:30:00Z",
+      "dependencies": [],
+      "size": 2048
+    },
+    {
+      "id": "gemini-aveva-html",
+      "filename": "aveva.html",
+      "path": "/references/gemini/aveva.html",
+      "ai": "gemini",
+      "type": "html",
+      "title": "AVEVA Overview",
+      "description": "AVEVA products and solutions overview",
+      "tags": ["aveva", "industrial", "software"],
+      "createdAt": "2025-01-14T15:20:00Z",
+      "updatedAt": "2025-01-14T15:20:00Z",
+      "dependencies": [],
+      "size": 1024
+    }
+  ]
+}
