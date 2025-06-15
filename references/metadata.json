@@ -1,34 +1,71 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "2025-01-15T10:30:00Z",
+  "lastUpdated": "2025-06-15T13:17:08.850Z",
   "files": [
+    {
+      "id": "claude-simple-card",
+      "filename": "simple-card.tsx",
+      "path": "/references/claude/simple-card.tsx",
+      "ai": "claude",
+      "type": "react",
+      "title": "Simple Card",
+      "description": "",
+      "tags": [
+        "styled",
+        "card",
+        "button"
+      ],
+      "createdAt": "2025-06-15T13:11:26.166Z",
+      "updatedAt": "2025-06-15T13:11:26.166Z",
+      "dependencies": [
+        "react",
+        "lucide-react"
+      ],
+      "size": 1877,
+      "searchText": "Simple Card  styled card button"
+    },
     {
       "id": "claude-princeton-resume",
       "filename": "princeton-resume.tsx",
       "path": "/references/claude/princeton-resume.tsx",
       "ai": "claude",
       "type": "react",
-      "title": "Princeton Resume Template",
-      "description": "Professional resume template based on Princeton University format",
-      "tags": ["resume", "template", "princeton"],
-      "createdAt": "2025-01-15T10:30:00Z",
-      "updatedAt": "2025-01-15T10:30:00Z",
-      "dependencies": [],
-      "size": 2048
+      "title": "Resume",
+      "description": "",
+      "tags": [
+        "styled",
+        "form",
+        "resume"
+      ],
+      "createdAt": "2025-06-15T08:08:48.365Z",
+      "updatedAt": "2025-06-15T12:46:19.692Z",
+      "dependencies": [
+        "react"
+      ],
+      "size": 24013,
+      "searchText": "Resume  styled form resume"
     },
     {
-      "id": "gemini-aveva-html",
+      "id": "gemini-aveva",
       "filename": "aveva.html",
       "path": "/references/gemini/aveva.html",
       "ai": "gemini",
       "type": "html",
-      "title": "AVEVA Overview",
-      "description": "AVEVA products and solutions overview",
-      "tags": ["aveva", "industrial", "software"],
-      "createdAt": "2025-01-14T15:20:00Z",
-      "updatedAt": "2025-01-14T15:20:00Z",
-      "dependencies": [],
-      "size": 1024
+      "title": "AVEVA 솔루션 분석: PDMS에서 E3D로의 전략적 전환",
+      "description": "AVEVA PDMS에서 E3D로의 이동은 단순한 업그레이드가 아닌, 비즈니스 연속성과\n        미래 경쟁력 확보를 위한 필수 전략입니다.",
+      "tags": [
+        "chart",
+        "table",
+        "form",
+        "aveva"
+      ],
+      "createdAt": "2025-06-15T08:32:16.802Z",
+      "updatedAt": "2025-06-15T12:14:15.291Z",
+      "dependencies": [
+        "npm"
+      ],
+      "size": 27956,
+      "searchText": "AVEVA 솔루션 분석: PDMS에서 E3D로의 전략적 전환 AVEVA PDMS에서 E3D로의 이동은 단순한 업그레이드가 아닌, 비즈니스 연속성과\n        미래 경쟁력 확보를 위한 필수 전략입니다. chart table form aveva"
     }
   ]
 }

@@ -9,9 +9,15 @@ let metadataCache: MetadataFile | null = null
 
 /**
  * Load metadata from JSON file and cache in memory
+ * @param forceReload Whether to force reload and bypass cache
  * @returns Promise<MetadataFile> The loaded metadata
  */
-export const loadMetadata = async (): Promise<MetadataFile> => {
+export const loadMetadata = async (forceReload: boolean = false): Promise<MetadataFile> => {
+  // Clear cache if force reload requested
+  if (forceReload) {
+    metadataCache = null
+  }
+  
   // Return cached metadata if available
   if (metadataCache) {
     return metadataCache
