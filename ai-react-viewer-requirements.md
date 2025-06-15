@@ -244,182 +244,213 @@ export const filterFiles = (files: FileMetadata[], filters: FilterOptions): File
 
 ---
 
-### PR5: Claude 파일 로더 구현
-**목표**: Claude의 React 컴포넌트를 동적으로 로드하는 로직 구현
+### PR5: 홈 페이지 기본 구현 (메타데이터 표시)
+**목표**: 메타데이터를 로드하여 간단한 목록으로 표시하는 홈 페이지 구현
 
 **왜 필요한가**:
-- React 컴포넌트를 런타임에 동적으로 import하여 렌더링
-- 파일 추가 시 코드 수정 없이 자동 반영
+- 메타데이터 로더가 제대로 작동하는지 브라우저에서 확인
+- 이후 PR들의 기반이 되는 페이지 구조 마련
+
+**구현 방법**:
+```tsx
+// src/pages/Home.tsx
+- useEffect로 메타데이터 로드
+- 간단한 ul/li로 파일 목록 표시
+- Claude/Gemini 구분하여 표시
+```
+
+**검증 방법**:
+- 브라우저에서 파일 목록 확인
+- metadata.json의 데이터가 화면에 표시됨
+- 로딩 상태 표시
+
+---
+
+### PR6: FileCard 컴포넌트 추가
+**목표**: 파일 정보를 카드 형태로 표시하는 컴포넌트 구현 및 홈 페이지에 적용
+
+**왜 필요한가**:
+- UI/UX 개선으로 파일 정보를 보기 좋게 표시
+- 클릭 가능한 카드로 상호작용 추가
+
+**구현 방법**:
+```tsx
+// src/components/FileCard.tsx
+- 제목, 설명, 태그 표시
+- Tailwind로 카드 스타일링
+// Home.tsx 수정
+- ul/li를 FileCard로 교체
+```
+
+**검증 방법**:
+- 브라우저에서 카드 형태의 파일 목록 확인
+- 호버 효과 작동
+- 반응형 디자인 확인
+
+---
+
+### PR7: 2열 레이아웃 적용
+**목표**: Claude와 Gemini 파일을 2열로 구분하여 표시
+
+**왜 필요한가**:
+- AI 도구별로 파일을 명확히 구분
+- 비교하기 쉬운 레이아웃
+
+**구현 방법**:
+```tsx
+// Home.tsx
+<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <section>
+    <h2>Claude 컴포넌트</h2>
+    {claudeFiles.map(...)}
+  </section>
+  <section>
+    <h2>Gemini 페이지</h2>
+    {geminiFiles.map(...)}
+  </section>
+</div>
+```
+
+**검증 방법**:
+- 브라우저에서 2열 레이아웃 확인
+- 모바일에서는 1열로 변경됨
+- 각 섹션에 올바른 파일 표시
+
+---
+
+### PR8: 검색 기능 추가
+**목표**: 메타데이터 기반 검색 기능을 홈 페이지에 추가
+
+**왜 필요한가**:
+- 파일이 많아질 때 원하는 파일을 빠르게 찾기
+- 제목, 설명, 태그로 검색 가능
+
+**구현 방법**:
+```tsx
+// src/components/SearchBar.tsx 생성
+// Home.tsx에 통합
+- 검색어 상태 관리
+- searchFiles 유틸리티 사용
+- 실시간 필터링
+```
+
+**검증 방법**:
+- 브라우저에서 검색바 표시
+- 검색어 입력 시 실시간 필터링
+- 검색 결과가 없을 때 메시지 표시
+
+---
+
+### PR9: 필터 기능 추가
+**목표**: AI 도구, 태그별 필터 기능 추가
+
+**왜 필요한가**:
+- 특정 카테고리의 파일만 보기
+- 검색과 함께 사용하여 정교한 필터링
+
+**구현 방법**:
+```tsx
+// src/components/FilterPanel.tsx 생성
+- AI 선택 (All/Claude/Gemini)
+- 태그 체크박스
+// Home.tsx에 통합
+```
+
+**검증 방법**:
+- 브라우저에서 필터 패널 표시
+- 필터 적용 시 목록 업데이트
+- 검색과 필터 동시 작동
+
+---
+
+### PR10: 파일 클릭 시 뷰어 페이지로 이동
+**목표**: FileCard 클릭 시 뷰어 페이지로 라우팅
+
+**왜 필요한가**:
+- 파일 내용을 보기 위한 네비게이션
+- SPA 라우팅 활용
+
+**구현 방법**:
+```tsx
+// FileCard에 onClick 추가
+onClick={() => navigate(`/view/${metadata.ai}/${metadata.filename}`)}
+// Viewer 페이지에 기본 구조
+```
+
+**검증 방법**:
+- 카드 클릭 시 URL 변경
+- 뷰어 페이지로 이동
+- 브라우저 뒤로가기 작동
+
+---
+
+### PR11: Claude 파일 로더 및 렌더러
+**목표**: Claude TSX 파일을 로드하고 렌더링하는 기능 구현
+
+**왜 필요한가**:
+- React 컴포넌트를 동적으로 표시
+- 뷰어 페이지에서 실제 컨텐츠 보기
 
 **구현 방법**:
 ```typescript
 // src/utils/fileLoader.ts
 const claudeModules = import.meta.glob('/references/claude/*.{tsx,jsx}')
-export const loadClaudeComponent = async (filename: string)
+// src/components/renderers/ReactRenderer.tsx
+// Viewer.tsx에 통합
 ```
 
 **검증 방법**:
-- 샘플 TSX 파일 로드 확인
-- 컴포넌트 렌더링 성공
-- 에러 처리 작동
+- Claude 파일 클릭 시 컴포넌트 렌더링
+- 로딩 상태 표시
+- 에러 처리 확인
 
 ---
 
-### PR6: Gemini 파일 로더 구현
-**목표**: Gemini의 HTML 파일을 로드하는 로직 구현
+### PR12: Gemini 파일 로더 및 렌더러
+**목표**: Gemini HTML 파일을 로드하고 iframe으로 렌더링
 
 **왜 필요한가**:
-- HTML 파일을 안전하게 로드하고 표시
-- iframe으로 격리하여 보안 확보
+- HTML 콘텐츠를 안전하게 표시
+- 완전한 뷰어 기능 완성
 
 **구현 방법**:
 ```typescript
+// fileLoader.ts에 추가
 const geminiFiles = import.meta.glob('/references/gemini/*.html', { as: 'raw' })
-export const loadGeminiHTML = async (filename: string): Promise<string>
-```
-
-**검증 방법**:
-- 샘플 HTML 파일 로드 확인
-- HTML 콘텐츠 문자열 반환
-- 파일 없을 때 에러 처리
-
----
-
-### PR7: FileCard 컴포넌트
-**목표**: 파일 정보를 표시하는 카드 컴포넌트 구현
-
-**왜 필요한가**:
-- 일관된 UI로 파일 정보 표시
-- 재사용 가능한 컴포넌트
-
-**구현 방법**:
-```tsx
-// src/components/FileCard.tsx
-interface FileCardProps {
-  metadata: FileMetadata
-  onClick: () => void
-}
-```
-- 제목, 설명, 태그, 날짜 표시
-- 호버 효과 및 클릭 이벤트
-
-**검증 방법**:
-- 메타데이터 정보 올바르게 표시
-- 클릭 이벤트 작동
-- 반응형 디자인 확인
-
----
-
-### PR8: 검색/필터 컴포넌트
-**목표**: 검색바와 필터 패널 컴포넌트 구현
-
-**왜 필요한가**:
-- 사용자가 원하는 파일을 빠르게 찾을 수 있도록 함
-- 메타데이터 기반 효율적인 검색
-
-**구현 방법**:
-```tsx
-// src/components/SearchPanel.tsx
-interface SearchPanelProps {
-  onSearch: (query: string) => void
-  onFilter: (filters: FilterOptions) => void
-}
-```
-
-**검증 방법**:
-- 검색어 입력 시 콜백 호출
-- 필터 옵션 변경 시 콜백 호출
-- UI 반응성 확인
-
----
-
-### PR9: ReactRenderer 컴포넌트
-**목표**: Claude의 React 컴포넌트를 렌더링하는 컴포넌트 구현
-
-**왜 필요한가**:
-- 동적으로 로드한 React 컴포넌트를 안전하게 렌더링
-- 에러 바운더리로 오류 격리
-
-**구현 방법**:
-```tsx
-// src/components/renderers/ReactRenderer.tsx
-interface ReactRendererProps {
-  component: React.ComponentType
-}
-```
-- React.Suspense로 로딩 상태 처리
-- ErrorBoundary로 에러 처리
-
-**검증 방법**:
-- 컴포넌트 정상 렌더링
-- 로딩 상태 표시
-- 에러 발생 시 fallback UI
-
----
-
-### PR10: HTMLRenderer 컴포넌트
-**목표**: Gemini의 HTML을 iframe으로 렌더링하는 컴포넌트 구현
-
-**왜 필요한가**:
-- HTML 콘텐츠를 안전하게 격리하여 표시
-- XSS 등 보안 위협 방지
-
-**구현 방법**:
-```tsx
 // src/components/renderers/HTMLRenderer.tsx
-interface HTMLRendererProps {
-  html: string
-}
+// Viewer.tsx에 통합
 ```
-- iframe sandbox 속성 설정
+
+**검증 방법**:
+- Gemini 파일 클릭 시 HTML 표시
+- iframe 내에서 스타일/스크립트 작동
 - 반응형 크기 조정
 
-**검증 방법**:
-- HTML 콘텐츠 정상 표시
-- 스크립트 실행 격리 확인
-- 반응형 레이아웃 작동
-
 ---
 
-### PR11: 홈 페이지 구현
-**목표**: 파일 목록을 표시하는 홈 페이지 완성
+### PR13: 뷰어 페이지 네비게이션 개선
+**목표**: 뷰어 페이지에 뒤로가기, 메타데이터 표시 추가
 
 **왜 필요한가**:
-- 사용자가 모든 파일을 한눈에 보고 선택
-- 검색/필터 기능 통합
+- 사용자 경험 개선
+- 파일 정보 확인 가능
 
 **구현 방법**:
-- 메타데이터 로드 및 상태 관리
-- 2열 레이아웃 (Claude | Gemini)
-- SearchPanel과 FileCard 통합
+```tsx
+// Viewer.tsx
+- 상단 네비게이션 바
+- 파일 제목, 설명 표시
+- 홈으로 돌아가기 버튼
+```
 
 **검증 방법**:
-- 파일 목록 정상 표시
-- 검색/필터 작동
-- 파일 클릭 시 뷰어로 이동
-
----
-
-### PR12: 뷰어 페이지 구현
-**목표**: 선택한 파일을 표시하는 뷰어 페이지 완성
-
-**왜 필요한가**:
-- 파일 내용을 전체 화면으로 보기
-- AI별 적절한 렌더러 사용
-
-**구현 방법**:
-- URL 파라미터에서 파일 정보 추출
-- AI 타입에 따라 렌더러 선택
-- 네비게이션 바 추가
-
-**검증 방법**:
-- Claude/Gemini 파일 모두 표시
+- 뷰어 페이지에서 파일 정보 확인
 - 뒤로가기 버튼 작동
-- 에러 상태 처리
+- 레이아웃 확인
 
 ---
 
-### PR13: Print CSS 및 PDF 출력
+### PR14: Print CSS 및 PDF 출력
 **목표**: 인쇄용 스타일 추가 및 PDF 출력 최적화
 
 **왜 필요한가**:
@@ -429,20 +460,20 @@ interface HTMLRendererProps {
 **구현 방법**:
 ```css
 @media print {
-  /* 인쇄용 스타일 */
+  /* 네비게이션 숨김 */
+  /* 페이지 여백 조정 */
+  /* 페이지 나누기 제어 */
 }
 ```
-- 불필요한 UI 요소 숨김
-- 페이지 나누기 제어
 
 **검증 방법**:
-- 브라우저 인쇄 미리보기 확인
-- PDF 출력 품질 검증
-- 페이지 레이아웃 확인
+- 브라우저 인쇄 미리보기에서 확인
+- 네비게이션 요소 숨겨짐
+- A4 크기에 맞게 조정됨
 
 ---
 
-### PR14: 메타데이터 생성 스크립트
+### PR15: 메타데이터 생성 스크립트
 **목표**: 파일을 스캔하여 metadata.json을 생성하는 Node.js 스크립트
 
 **왜 필요한가**:
@@ -464,7 +495,7 @@ interface HTMLRendererProps {
 
 ---
 
-### PR15: 문서화
+### PR16: 문서화
 **목표**: README.md와 CLAUDE.md 작성
 
 **왜 필요한가**:
