@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { loadMetadata, searchFiles, filterFiles, getAllTags } from '../utils/metadataManager'
 import type { FileMetadata, FilterOptions } from '../types/metadata'
 import FileCard from '../components/FileCard'
@@ -6,6 +7,7 @@ import SearchBar from '../components/SearchBar'
 import FilterPanel from '../components/FilterPanel'
 
 const Home: React.FC = () => {
+  const navigate = useNavigate()
   const [files, setFiles] = useState<FileMetadata[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -52,6 +54,10 @@ const Home: React.FC = () => {
 
   const claudeFiles = filteredFiles.filter(file => file.ai === 'claude')
   const geminiFiles = filteredFiles.filter(file => file.ai === 'gemini')
+
+  const handleFileClick = (file: FileMetadata) => {
+    navigate(`/view/${file.ai}/${file.filename}`)
+  }
 
   if (loading) {
     return (
@@ -124,6 +130,7 @@ const Home: React.FC = () => {
                   <FileCard 
                     key={file.id} 
                     file={file}
+                    onClick={() => handleFileClick(file)}
                   />
                 ))
               ) : (
@@ -150,6 +157,7 @@ const Home: React.FC = () => {
                   <FileCard 
                     key={file.id} 
                     file={file}
+                    onClick={() => handleFileClick(file)}
                   />
                 ))
               ) : (
