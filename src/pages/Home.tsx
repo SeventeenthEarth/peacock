@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import { loadMetadata } from '../utils/metadataManager'
+import React, { useEffect, useState, useMemo } from 'react'
+import { loadMetadata, searchFiles } from '../utils/metadataManager'
 import type { FileMetadata } from '../types/metadata'
 import FileCard from '../components/FileCard'
+import SearchBar from '../components/SearchBar'
 
 const Home: React.FC = () => {
   const [files, setFiles] = useState<FileMetadata[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -26,8 +28,13 @@ const Home: React.FC = () => {
     fetchMetadata()
   }, [])
 
-  const claudeFiles = files.filter(file => file.ai === 'claude')
-  const geminiFiles = files.filter(file => file.ai === 'gemini')
+  // Apply search filtering
+  const filteredFiles = useMemo(() => {
+    return searchQuery ? searchFiles(files, searchQuery) : files
+  }, [files, searchQuery])
+
+  const claudeFiles = filteredFiles.filter(file => file.ai === 'claude')
+  const geminiFiles = filteredFiles.filter(file => file.ai === 'gemini')
 
   if (loading) {
     return (
@@ -63,6 +70,25 @@ const Home: React.FC = () => {
           AI 생성 파일 목록
         </h1>
         
+        <SearchBar 
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
+
+        {/* Search results summary */}
+        {searchQuery && (
+          <div className="mb-6 text-sm text-gray-600">
+            <span className="font-medium">
+              총 {filteredFiles.length}개 파일 발견
+            </span>
+            {filteredFiles.length === 0 && (
+              <span className="text-gray-500 ml-2">
+                - 검색 조건에 맞는 파일이 없습니다.
+              </span>
+            )}
+          </div>
+        )}
+        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Claude 섹션 */}
           <div>
@@ -79,7 +105,9 @@ const Home: React.FC = () => {
                 ))
               ) : (
                 <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
-                  <p className="text-gray-500">Claude 파일이 없습니다.</p>
+                  <p className="text-gray-500">
+                    {searchQuery ? '검색 조건에 맞는 Claude 파일이 없습니다.' : 'Claude 파일이 없습니다.'}
+                  </p>
                 </div>
               )}
             </div>
@@ -100,7 +128,9 @@ const Home: React.FC = () => {
                 ))
               ) : (
                 <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
-                  <p className="text-gray-500">Gemini 파일이 없습니다.</p>
+                  <p className="text-gray-500">
+                    {searchQuery ? '검색 조건에 맞는 Gemini 파일이 없습니다.' : 'Gemini 파일이 없습니다.'}
+                  </p>
                 </div>
               )}
             </div>
