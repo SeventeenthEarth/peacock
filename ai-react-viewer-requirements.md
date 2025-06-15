@@ -123,14 +123,18 @@ interface MetadataFile {
 
 #### 4.4 파일 뷰어
 - 라우트: `/view/:ai/:filename`
-- Claude: React 컴포넌트 직접 렌더링
-- Gemini: iframe으로 안전하게 렌더링
-- 에러 처리 및 로딩 상태
+- 출력에 최적화된 깔끔한 레이아웃
+- Claude: React 컴포넌트를 A4 너비로 중앙 정렬
+- Gemini: iframe으로 전체 화면 렌더링
+- 브라우저 기본 출력 기능(Ctrl+P) 활용
+- 불필요한 UI 요소 없이 콘텐츠만 표시
 
 #### 4.5 PDF 출력
-- 브라우저 인쇄 기능 활용
-- Print CSS 최적화
-- 페이지 레이아웃 조정
+- 브라우저 인쇄 기능(Ctrl+P) 활용
+- 뷰어 페이지는 출력에 최적화된 레이아웃
+- A4 크기 자동 맞춤
+- 불필요한 여백 최소화
+- 페이지 나누기 자동 제어
 
 ### 5. 기술 요구사항
 
@@ -385,91 +389,126 @@ onClick={() => navigate(`/view/${metadata.ai}/${metadata.filename}`)}
 ---
 
 ### PR11: Claude 파일 로더 및 렌더러
-**목표**: Claude TSX 파일을 로드하고 렌더링하는 기능 구현
+**목표**: Claude TSX 파일을 로드하고 출력에 최적화된 방식으로 렌더링
 
 **왜 필요한가**:
 - React 컴포넌트를 동적으로 표시
-- 뷰어 페이지에서 실제 컨텐츠 보기
+- 출력 시 깨끗한 레이아웃 보장
 
 **구현 방법**:
 ```typescript
 // src/utils/fileLoader.ts
 const claudeModules = import.meta.glob('/references/claude/*.{tsx,jsx}')
+
 // src/components/renderers/ReactRenderer.tsx
-// Viewer.tsx에 통합
+<div className="w-full max-w-[210mm] mx-auto">
+  <Suspense fallback={<div>로딩 중...</div>}>
+    <Component />
+  </Suspense>
+</div>
 ```
 
 **검증 방법**:
 - Claude 파일 클릭 시 컴포넌트 렌더링
-- 로딩 상태 표시
-- 에러 처리 확인
+- A4 너비(210mm)에 맞춰 중앙 정렬
+- 출력 미리보기에서 적절한 크기
 
 ---
 
 ### PR12: Gemini 파일 로더 및 렌더러
-**목표**: Gemini HTML 파일을 로드하고 iframe으로 렌더링
+**목표**: Gemini HTML 파일을 로드하고 iframe으로 출력 가능하게 렌더링
 
 **왜 필요한가**:
 - HTML 콘텐츠를 안전하게 표시
-- 완전한 뷰어 기능 완성
+- 원본 스타일 유지하며 출력
 
 **구현 방법**:
 ```typescript
 // fileLoader.ts에 추가
 const geminiFiles = import.meta.glob('/references/gemini/*.html', { as: 'raw' })
+
 // src/components/renderers/HTMLRenderer.tsx
-// Viewer.tsx에 통합
+<iframe 
+  srcDoc={html}
+  className="w-full h-screen border-0"
+  sandbox="allow-scripts allow-same-origin"
+/>
 ```
 
 **검증 방법**:
 - Gemini 파일 클릭 시 HTML 표시
-- iframe 내에서 스타일/스크립트 작동
-- 반응형 크기 조정
+- 전체 화면으로 콘텐츠 표시
+- 출력 시 원본 레이아웃 유지
 
 ---
 
-### PR13: 뷰어 페이지 네비게이션 개선
-**목표**: 뷰어 페이지에 뒤로가기, 메타데이터 표시 추가
+### PR13: 뷰어 페이지 출력 최적화
+**목표**: 뷰어 페이지를 A4 출력에 최적화된 레이아웃으로 구성
 
 **왜 필요한가**:
-- 사용자 경험 개선
-- 파일 정보 확인 가능
+- 불필요한 UI 요소 제거로 깔끔한 출력물
+- A4 크기에 맞는 콘텐츠 표시
+- 브라우저 기본 출력(Ctrl+P) 활용
 
 **구현 방법**:
 ```tsx
-// Viewer.tsx
-- 상단 네비게이션 바
-- 파일 제목, 설명 표시
-- 홈으로 돌아가기 버튼
-```
+// Viewer.tsx 단순화
+<div className="min-h-screen bg-white">
+  {/* 콘텐츠만 표시, 여백은 CSS로 제어 */}
+  {ai === 'claude' ? <ReactRenderer /> : <HTMLRenderer />}
+</div>
 
-**검증 방법**:
-- 뷰어 페이지에서 파일 정보 확인
-- 뒤로가기 버튼 작동
-- 레이아웃 확인
-
----
-
-### PR14: Print CSS 및 PDF 출력
-**목표**: 인쇄용 스타일 추가 및 PDF 출력 최적화
-
-**왜 필요한가**:
-- 웹 콘텐츠를 깔끔하게 인쇄
-- PDF로 저장하여 공유 가능
-
-**구현 방법**:
-```css
+// 출력용 CSS
 @media print {
-  /* 네비게이션 숨김 */
-  /* 페이지 여백 조정 */
-  /* 페이지 나누기 제어 */
+  @page { 
+    size: A4;
+    margin: 20mm;
+  }
 }
 ```
 
 **검증 방법**:
-- 브라우저 인쇄 미리보기에서 확인
-- 네비게이션 요소 숨겨짐
-- A4 크기에 맞게 조정됨
+- 뷰어 페이지에 콘텐츠만 표시됨
+- Ctrl+P로 출력 미리보기 확인
+- A4 크기에 적절히 맞춰짐
+
+---
+
+### PR14: Print CSS 최종 최적화
+**목표**: 출력 품질 향상을 위한 세부 CSS 조정
+
+**왜 필요한가**:
+- 홈 페이지 출력 방지
+- 뷰어 페이지 출력 품질 극대화
+- 페이지 나누기 제어
+
+**구현 방법**:
+```css
+/* 홈 페이지 출력 방지 */
+@media print {
+  .home-page { display: none; }
+  body.home-page::after { 
+    content: "파일을 선택하여 뷰어에서 출력하세요"; 
+  }
+}
+
+/* 뷰어 페이지 최적화 */
+@media print {
+  @page { 
+    size: A4;
+    margin: 20mm;
+  }
+  
+  /* 페이지 나누기 제어 */
+  h1, h2, h3 { break-after: avoid; }
+  img, table { break-inside: avoid; }
+}
+```
+
+**검증 방법**:
+- 홈에서 Ctrl+P 시 안내 메시지
+- 뷰어에서 출력 시 깨끗한 레이아웃
+- 이미지/표가 페이지 경계에서 잘리지 않음
 
 ---
 
