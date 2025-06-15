@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import { loadMetadata, searchFiles } from '../utils/metadataManager'
-import type { FileMetadata } from '../types/metadata'
+import { loadMetadata, searchFiles, filterFiles, getAllTags } from '../utils/metadataManager'
+import type { FileMetadata, FilterOptions } from '../types/metadata'
 import FileCard from '../components/FileCard'
 import SearchBar from '../components/SearchBar'
+import FilterPanel from '../components/FilterPanel'
 
 const Home: React.FC = () => {
   const [files, setFiles] = useState<FileMetadata[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [filters, setFilters] = useState<FilterOptions>({})
 
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -28,10 +30,25 @@ const Home: React.FC = () => {
     fetchMetadata()
   }, [])
 
-  // Apply search filtering
+  // Get available tags for filter panel
+  const availableTags = useMemo(() => {
+    return getAllTags(files)
+  }, [files])
+
+  // Apply search and filter
   const filteredFiles = useMemo(() => {
-    return searchQuery ? searchFiles(files, searchQuery) : files
-  }, [files, searchQuery])
+    let result = files
+    
+    // Apply search first
+    if (searchQuery) {
+      result = searchFiles(result, searchQuery)
+    }
+    
+    // Apply filters
+    result = filterFiles(result, filters)
+    
+    return result
+  }, [files, searchQuery, filters])
 
   const claudeFiles = filteredFiles.filter(file => file.ai === 'claude')
   const geminiFiles = filteredFiles.filter(file => file.ai === 'gemini')
@@ -75,15 +92,21 @@ const Home: React.FC = () => {
           onSearchChange={setSearchQuery}
         />
 
-        {/* Search results summary */}
-        {searchQuery && (
+        <FilterPanel 
+          filters={filters}
+          onFiltersChange={setFilters}
+          availableTags={availableTags}
+        />
+
+        {/* Search and filter results summary */}
+        {(searchQuery || Object.keys(filters).length > 0) && (
           <div className="mb-6 text-sm text-gray-600">
             <span className="font-medium">
               총 {filteredFiles.length}개 파일 발견
             </span>
             {filteredFiles.length === 0 && (
               <span className="text-gray-500 ml-2">
-                - 검색 조건에 맞는 파일이 없습니다.
+                - 검색/필터 조건에 맞는 파일이 없습니다.
               </span>
             )}
           </div>
@@ -106,7 +129,10 @@ const Home: React.FC = () => {
               ) : (
                 <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
                   <p className="text-gray-500">
-                    {searchQuery ? '검색 조건에 맞는 Claude 파일이 없습니다.' : 'Claude 파일이 없습니다.'}
+                    {(searchQuery || Object.keys(filters).length > 0) 
+                      ? '검색/필터 조건에 맞는 Claude 파일이 없습니다.' 
+                      : 'Claude 파일이 없습니다.'
+                    }
                   </p>
                 </div>
               )}
@@ -129,7 +155,10 @@ const Home: React.FC = () => {
               ) : (
                 <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
                   <p className="text-gray-500">
-                    {searchQuery ? '검색 조건에 맞는 Gemini 파일이 없습니다.' : 'Gemini 파일이 없습니다.'}
+                    {(searchQuery || Object.keys(filters).length > 0) 
+                      ? '검색/필터 조건에 맞는 Gemini 파일이 없습니다.' 
+                      : 'Gemini 파일이 없습니다.'
+                    }
                   </p>
                 </div>
               )}
