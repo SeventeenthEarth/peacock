@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import type { ComponentType } from 'react';
 
 const claudeModules = import.meta.glob('/references/claude/*.{tsx,jsx}');
+const geminiFiles = import.meta.glob('/references/gemini/*.html', { query: '?raw', import: 'default' });
 
 export const loadClaudeComponent = async (filename: string): Promise<ComponentType<Record<string, unknown>>> => {
   const modulePath = `/references/claude/${filename}`;
@@ -25,4 +26,21 @@ export const createLazyClaudeComponent = (filename: string) => {
     const Component = await loadClaudeComponent(filename);
     return { default: Component };
   });
+};
+
+export const loadGeminiHTML = async (filename: string): Promise<string> => {
+  const filePath = `/references/gemini/${filename}`;
+  
+  if (!(filePath in geminiFiles)) {
+    throw new Error(`Gemini file not found: ${filename}`);
+  }
+
+  const fileLoader = geminiFiles[filePath];
+  const htmlContent = await fileLoader() as string;
+  
+  if (typeof htmlContent !== 'string') {
+    throw new Error(`Invalid HTML content for ${filename}`);
+  }
+  
+  return htmlContent;
 };

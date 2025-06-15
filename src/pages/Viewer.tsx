@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { loadMetadata, getFileByFilenameAndAI } from '../utils/metadataManager'
 import type { FileMetadata } from '../types/metadata'
 import ReactRenderer from '../components/renderers/ReactRenderer'
+import HTMLRenderer from '../components/renderers/HTMLRenderer'
 
 const Viewer: React.FC = () => {
   const { ai, filename } = useParams<{ ai: string; filename: string }>()
@@ -212,13 +213,12 @@ const Viewer: React.FC = () => {
               </h2>
               {fileMetadata.ai === 'claude' && fileMetadata.type === 'react' ? (
                 <ReactRenderer filename={fileMetadata.filename} />
+              ) : fileMetadata.ai === 'gemini' && fileMetadata.type === 'html' ? (
+                <HTMLRenderer filename={fileMetadata.filename} />
               ) : (
                 <div className="p-6 bg-gray-50 rounded-lg border">
                   <p className="text-gray-500 text-center">
-                    HTML 콘텐츠가 여기에 표시됩니다.
-                  </p>
-                  <p className="text-sm text-gray-400 text-center mt-2">
-                    HTML 렌더링은 PR12에서 구현됩니다.
+                    지원하지 않는 파일 형식입니다.
                   </p>
                 </div>
               )}
