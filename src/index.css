@@ -2,16 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Print CSS for A4 optimization */
+/* Print CSS for A4 optimization - Enhanced */
 @media print {
   @page {
     size: A4;
     margin: 20mm;
+    /* Remove default browser headers/footers */
+    @top-left { content: ""; }
+    @top-center { content: ""; }
+    @top-right { content: ""; }
+    @bottom-left { content: ""; }
+    @bottom-center { content: ""; }
+    @bottom-right { content: ""; }
   }
 
   /* Hide navigation and non-essential elements */
   .print\\:hidden {
     display: none !important;
+  }
+
+  /* Root optimizations */
+  html, body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   /* Viewer page print optimization */
@@ -21,61 +38,114 @@
   }
 
   .print-content {
-    max-width: none;
-    padding: 0;
-    margin: 0;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .print-header {
-    margin-bottom: 1rem;
-    page-break-after: avoid;
+    margin-bottom: 1rem !important;
+    page-break-after: avoid !important;
   }
 
   .print-main {
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  /* Typography optimizations for print */
+  /* Advanced page break control */
   h1, h2, h3, h4, h5, h6 {
-    page-break-after: avoid;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
     color: black !important;
+    break-after: avoid !important;
+    break-inside: avoid !important;
   }
 
-  /* Prevent elements from breaking across pages */
-  img, table, figure, .print-avoid-break {
-    page-break-inside: avoid;
+  /* Keep related content together */
+  .section, .card, .block {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Prevent orphans and widows */
+  p {
+    orphans: 3 !important;
+    widows: 3 !important;
+  }
+
+  /* Media elements protection */
+  img, table, figure, .print-avoid-break, 
+  .chart, .diagram, .code-block {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Table-specific optimizations */
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  
+  thead {
+    display: table-header-group !important;
+  }
+  
+  tbody {
+    display: table-row-group !important;
+  }
+  
+  tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   /* Force page breaks where needed */
   .print-page-break {
-    page-break-before: always;
+    page-break-before: always !important;
+    break-before: page !important;
   }
 
-  /* Remove shadows and borders for cleaner print */
-  .shadow, .shadow-sm, .shadow-md, .shadow-lg {
+  /* Remove visual effects for cleaner print */
+  .shadow, .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl {
     box-shadow: none !important;
   }
 
-  /* Ensure proper contrast */
+  .border-0 {
+    border: none !important;
+  }
+
+  /* Ensure proper color reproduction */
   * {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
 
-  /* Remove background colors that don't print well */
+  /* Background optimizations */
+  .bg-transparent {
+    background: transparent !important;
+  }
+
+  /* Remove problematic backgrounds but keep essential ones */
   .bg-gray-50, .bg-gray-100 {
-    background-color: white !important;
+    background-color: #f9f9f9 !important;
   }
 
-  /* Optimize text for readability */
-  body {
-    font-size: 12pt;
-    line-height: 1.4;
-  }
+  /* Text optimizations */
+  .text-xs { font-size: 9pt !important; }
+  .text-sm { font-size: 10pt !important; }
+  .text-base { font-size: 12pt !important; }
+  .text-lg { font-size: 14pt !important; }
+  .text-xl { font-size: 16pt !important; }
+  .text-2xl { font-size: 18pt !important; }
+  .text-3xl { font-size: 22pt !important; }
+  .text-4xl { font-size: 26pt !important; }
 
-  /* Remove rounded corners for print */
-  .rounded, .rounded-lg, .rounded-md {
+  /* Remove rounded corners for professional appearance */
+  .rounded, .rounded-lg, .rounded-md, .rounded-sm, .rounded-xl {
     border-radius: 0 !important;
   }
 
@@ -101,20 +171,60 @@
     margin: 0 !important;
     padding: 0 !important;
   }
+
+  /* Links for print */
+  a {
+    color: black !important;
+    text-decoration: underline !important;
+  }
+
+  /* List optimizations */
+  ul, ol {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  li {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
 }
 
-/* Home page print prevention */
+/* Home page print prevention - Enhanced */
 @media print {
-  .home-page {
+  /* Hide home page content completely */
+  .home-page * {
     display: none !important;
   }
 
-  .home-page::after {
+  /* Show guidance message only */
+  .home-page::before {
     content: "파일을 선택하여 뷰어에서 출력하세요";
-    display: block;
+    display: block !important;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
-    font-size: 18pt;
-    margin-top: 2in;
-    color: black;
+    font-size: 24pt;
+    font-weight: bold;
+    color: #333;
+    background: white;
+    padding: 2rem;
+    border: 2px solid #333;
+    border-radius: 8px;
+  }
+
+  .home-page::after {
+    content: "뷰어 페이지에서만 PDF 출력이 가능합니다.";
+    display: block !important;
+    position: fixed;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: 14pt;
+    color: #666;
+    background: white;
   }
 }
