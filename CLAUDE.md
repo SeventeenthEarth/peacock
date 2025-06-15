@@ -55,8 +55,6 @@ npm run build        # Type-check with TypeScript then build for production
 # Code Quality
 npm run lint         # Run ESLint to check for code issues
 
-# Preview
-npm run preview      # Preview production build locally
 
 # Metadata Management
 npm run generate-metadata  # Generate metadata.json from file system scan

@@ -59,12 +59,6 @@ npm run dev
 npm run build
 ```
 
-### 4. 빌드된 앱 미리보기
-
-```bash
-npm run preview
-```
-
 ## 📝 사용 방법
 
 ### 새 파일 추가하기
@@ -110,9 +104,6 @@ npm run build
 
 # 코드 린팅
 npm run lint
-
-# 빌드 미리보기
-npm run preview
 
 # 메타데이터 생성
 npm run generate-metadata
