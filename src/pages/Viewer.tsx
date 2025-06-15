@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { loadMetadata, getFileByFilenameAndAI } from '../utils/metadataManager'
 import type { FileMetadata } from '../types/metadata'
+import ReactRenderer from '../components/renderers/ReactRenderer'
 
 const Viewer: React.FC = () => {
   const { ai, filename } = useParams<{ ai: string; filename: string }>()
@@ -209,17 +210,18 @@ const Viewer: React.FC = () => {
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
                 파일 내용
               </h2>
-              <div className="p-6 bg-gray-50 rounded-lg border">
-                <p className="text-gray-500 text-center">
-                  {fileMetadata.type === 'react' 
-                    ? 'React 컴포넌트가 여기에 렌더링됩니다.' 
-                    : 'HTML 콘텐츠가 여기에 표시됩니다.'
-                  }
-                </p>
-                <p className="text-sm text-gray-400 text-center mt-2">
-                  실제 파일 렌더링은 PR11, PR12에서 구현됩니다.
-                </p>
-              </div>
+              {fileMetadata.ai === 'claude' && fileMetadata.type === 'react' ? (
+                <ReactRenderer filename={fileMetadata.filename} />
+              ) : (
+                <div className="p-6 bg-gray-50 rounded-lg border">
+                  <p className="text-gray-500 text-center">
+                    HTML 콘텐츠가 여기에 표시됩니다.
+                  </p>
+                  <p className="text-sm text-gray-400 text-center mt-2">
+                    HTML 렌더링은 PR12에서 구현됩니다.
+                  </p>
+                </div>
+              )}
             </div>
           </>
         )}
