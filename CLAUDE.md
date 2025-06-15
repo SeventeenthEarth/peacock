@@ -185,3 +185,158 @@ The project uses a multi-file TypeScript configuration:
   1. Write the component/function code that uses the new package
   2. Add the import statement after the code is complete
   3. This prevents IDEs from automatically removing "unused" imports during development
+
+## Claude Code Workflows
+
+### Adding New AI-Generated Files
+
+1. **For Claude React Components (.tsx/.jsx)**:
+   ```bash
+   # Add file to references/claude/
+   # Then regenerate metadata
+   npm run generate-metadata
+   
+   # Verify in browser
+   npm run dev
+   ```
+
+2. **For Gemini HTML Files (.html)**:
+   ```bash
+   # Add file to references/gemini/
+   # Then regenerate metadata
+   npm run generate-metadata
+   
+   # Verify in browser
+   npm run dev
+   ```
+
+### Troubleshooting File Issues
+
+1. **File not appearing in list**:
+   ```bash
+   # Check file location
+   ls references/claude/
+   ls references/gemini/
+   
+   # Regenerate metadata
+   npm run generate-metadata
+   
+   # Check metadata content
+   cat references/metadata.json
+   ```
+
+2. **Component rendering errors**:
+   ```bash
+   # Check browser console
+   # Verify component syntax
+   npm run lint
+   
+   # Test build
+   npm run build
+   ```
+
+### PDF Export Workflow
+
+1. **Optimize for printing**:
+   - Navigate to viewer page (`/view/:ai/:filename`)
+   - Use Ctrl+P (Windows/Linux) or Cmd+P (Mac)
+   - Set paper size to A4
+   - Enable "Background graphics"
+
+2. **Print CSS debugging**:
+   ```bash
+   # Test print styles in browser dev tools
+   # Use print media emulation
+   # Check @media print rules in CSS
+   ```
+
+### Project Maintenance
+
+#### Code Quality Checks
+
+```bash
+# Run all quality checks
+npm run lint          # ESLint
+npm run build         # TypeScript + Build
+
+# Fix linting issues
+npx eslint . --fix
+```
+
+#### Performance Monitoring
+
+- **Metadata Loading**: Should be < 1 second
+- **File Rendering**: Should be near-instant with caching
+- **Search Response**: Should be < 100ms
+- **Build Size**: Monitor bundle size with `npm run build`
+
+#### Adding New Features
+
+1. **Follow PR-based approach**: Implement one feature at a time
+2. **Update metadata schema**: If adding new file properties
+3. **Update search indexes**: If adding searchable content
+4. **Test across file types**: Both Claude and Gemini files
+5. **Verify print output**: Ensure PDF export still works
+
+### Emergency Recovery
+
+#### Corrupted Metadata
+
+```bash
+# Backup current metadata
+cp references/metadata.json references/metadata.json.backup
+
+# Regenerate from scratch
+npm run generate-metadata
+
+# Compare and verify
+diff references/metadata.json.backup references/metadata.json
+```
+
+#### Missing Dependencies
+
+```bash
+# Reinstall all dependencies
+rm -rf node_modules package-lock.json
+npm install
+
+# Clear browser cache and restart dev server
+npm run dev
+```
+
+#### Build Failures
+
+```bash
+# Check TypeScript errors
+npx tsc --noEmit
+
+# Check for missing imports
+npm run lint
+
+# Clean build
+rm -rf dist/
+npm run build
+```
+
+## User Workflow Examples
+
+### Daily Usage Pattern
+
+1. **Generate new AI content** (Claude/Gemini)
+2. **Save files** to appropriate directories
+3. **Run metadata generation**: `npm run generate-metadata`
+4. **Refresh app** and view new content
+5. **Export to PDF** as needed
+
+### Team Collaboration
+
+1. **Share references folder** with team members
+2. **Include metadata.json** in version control
+3. **Document file naming conventions**
+4. **Maintain consistent folder structure**
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
