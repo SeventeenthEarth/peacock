@@ -1,3 +1,120 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Print CSS for A4 optimization */
+@media print {
+  @page {
+    size: A4;
+    margin: 20mm;
+  }
+
+  /* Hide navigation and non-essential elements */
+  .print\\:hidden {
+    display: none !important;
+  }
+
+  /* Viewer page print optimization */
+  .print-optimized {
+    background: white !important;
+    color: black !important;
+  }
+
+  .print-content {
+    max-width: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .print-header {
+    margin-bottom: 1rem;
+    page-break-after: avoid;
+  }
+
+  .print-main {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Typography optimizations for print */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    color: black !important;
+  }
+
+  /* Prevent elements from breaking across pages */
+  img, table, figure, .print-avoid-break {
+    page-break-inside: avoid;
+  }
+
+  /* Force page breaks where needed */
+  .print-page-break {
+    page-break-before: always;
+  }
+
+  /* Remove shadows and borders for cleaner print */
+  .shadow, .shadow-sm, .shadow-md, .shadow-lg {
+    box-shadow: none !important;
+  }
+
+  /* Ensure proper contrast */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Remove background colors that don't print well */
+  .bg-gray-50, .bg-gray-100 {
+    background-color: white !important;
+  }
+
+  /* Optimize text for readability */
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+
+  /* Remove rounded corners for print */
+  .rounded, .rounded-lg, .rounded-md {
+    border-radius: 0 !important;
+  }
+
+  /* Renderer-specific optimizations */
+  .react-renderer {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  .html-renderer {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .html-renderer iframe {
+    width: 100% !important;
+    height: 100vh !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+/* Home page print prevention */
+@media print {
+  .home-page {
+    display: none !important;
+  }
+
+  .home-page::after {
+    content: "파일을 선택하여 뷰어에서 출력하세요";
+    display: block;
+    text-align: center;
+    font-size: 18pt;
+    margin-top: 2in;
+    color: black;
+  }
+}
