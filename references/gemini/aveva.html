@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVEVA 솔루션 분석: PDMS에서 E3D로의 전략적 전환</title>
+    <!-- Chosen Palette: Soothing Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed as a narrative journey for a decision-maker, moving from understanding the problem to exploring the solution and its strategic value. 1. **Hero Section**: Immediately presents the core conclusion and key ROI metrics to establish urgency. 2. **The End of an Era (Timeline)**: Provides historical context and visualizes the technology lifecycle, demonstrating why change is necessary now. 3. **The Generational Leap (Interactive Comparison)**: This is the core interactive element. Instead of a static table, users can click through thematic tabs (Architecture, UX, Performance, Laser Scanning) to compare PDMS and E3D in digestible chunks. This active engagement enhances comprehension. 4. **Quantifiable Value (ROI)**: Focuses on the business case, presenting proven ROI data through clear charts and customer success stories. 5. **Beyond a Tool (Ecosystem)**: Visually explains E3D's strategic role within the larger AVEVA ecosystem using an HTML/CSS diagram, clarifying its value as a platform, not just a product. 6. **Strategic Roadmap (Recommendations)**: Concludes with actionable advice, providing a clear path forward for users. This structure guides the user from "Why should I care?" to "What are the benefits?" and finally to "What should I do next?", making the complex report content accessible and actionable. A sticky navigation bar facilitates easy exploration across these thematic sections. -->
+    <!-- Visualization & Content Choices:
+        - **Hero Stats (Inform)**: Large HTML text for immediate impact. Goal: Grab attention with key metrics (40% efficiency).
+        - **Timeline (Change)**: HTML/CSS vertical timeline. Goal: Show the evolution and end-of-life of PDMS clearly and linearly. Method: Styled divs and pseudo-elements.
+        - **Radar Chart (Compare)**: Chart.js. Goal: Provide a high-level, multi-axis visual summary of E3D's superiority over PDMS. Justification: Excellent for comparing multiple quantitative features at once.
+        - **Bar Chart (Compare)**: Chart.js. Goal: Display specific, quantifiable ROI benefits like cost and time savings. Justification: Best for direct comparison of discrete values.
+        - **Donut Chart (Inform)**: Chart.js. Goal: Highlight a single, powerful case study statistic (Hanla NMT's 30% time saving). Justification: Effective for showing part-to-whole relationships simply.
+        - **Ecosystem Diagram (Organize/Relationships)**: HTML/CSS with Tailwind Flexbox/Grid. Goal: Illustrate the connection between E3D, Unified Engineering, and the Digital Twin concept. Justification: Replaces SVG/Mermaid for flow diagrams, effectively showing relationships and hierarchy with styled divs and borders.
+        - **Interactive Tabs (Interaction/Filter)**: Vanilla JavaScript. Goal: Break down the dense comparison table from the report into manageable, user-selectable topics. Justification: Improves user experience by preventing information overload and encouraging active exploration.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8F7F4;
+            color: #3C3C3C;
+        }
+        .bg-primary { background-color: #F8F7F4; }
+        .bg-secondary { background-color: #FFFFFF; }
+        .bg-accent { background-color: #4A5C6A; }
+        .text-accent { color: #4A5C6A; }
+        .border-accent { border-color: #4A5C6A; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -33px;
+            top: 4px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: #FFFFFF;
+            border: 3px solid #D1D5DB;
+        }
+        .timeline-item.active::before {
+            border-color: #4A5C6A;
+            background-color: #4A5C6A;
+        }
+        .tab-btn.active {
+            background-color: #4A5C6A;
+            color: #FFFFFF;
+            border-color: #4A5C6A;
+        }
+        .flow-box {
+            border: 2px solid #D1D5DB;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        .flow-box.highlight {
+            border-color: #4A5C6A;
+            background-color: #E6E9EB;
+            font-weight: bold;
+        }
+        .flow-arrow {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #9CA3AF;
+        }
+    </style>
+</head>
+<body class="bg-primary">
+
+<nav id="navbar" class="sticky top-0 z-50 bg-secondary shadow-md transition-all duration-300">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+            <a href="#" class="text-xl font-bold text-accent">AVEVA 솔루션 분석</a>
+            <div class="hidden md:flex space-x-6">
+                <a href="#timeline" class="text-gray-600 hover:text-accent transition">시대의 변화</a>
+                <a href="#comparison" class="text-gray-600 hover:text-accent transition">세대 교체</a>
+                <a href="#roi" class="text-gray-600 hover:text-accent transition">비즈니스 가치</a>
+                <a href="#ecosystem" class="text-gray-600 hover:text-accent transition">미래 전략</a>
+                <a href="#recommendation" class="text-gray-600 hover:text-accent transition">최종 권고</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<header class="text-center py-20 px-4 bg-secondary">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight">플랜트 설계의 패러다임 전환</h1>
+    <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">AVEVA PDMS에서 E3D로의 이동은 단순한 업그레이드가 아닌, 비즈니스 연속성과 미래 경쟁력 확보를 위한 필수 전략입니다.</p>
+    <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div class="p-6">
+            <p class="text-5xl font-bold text-accent">40%</p>
+            <p class="mt-2 text-lg text-gray-700">최대 엔지니어링 공수 절감</p>
+        </div>
+        <div class="p-6">
+            <p class="text-5xl font-bold text-accent">지원 종료</p>
+            <p class="mt-2 text-lg text-gray-700">2024년 4월, PDMS 지원 공식 중단</p>
+        </div>
+        <div class="p-6">
+            <p class="text-5xl font-bold text-accent">100%</p>
+            <p class="mt-2 text-lg text-gray-700">디지털 트윈 플랫폼 준비</p>
+        </div>
+    </div>
+</header>
+
+<main class="container mx-auto px-4 md:px-8 py-16">
+
+    <section id="timeline" class="max-w-4xl mx-auto mb-24">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold mb-3">시대의 흐름: PDMS에서 E3D까지</h2>
+            <p class="text-gray-600">수십 년간 업계 표준이었던 PDMS는 기술적 한계에 도달했고, 시장은 데이터 중심의 새로운 솔루션을 요구했습니다. 이는 E3D 탄생의 필연적인 배경입니다.</p>
+        </div>
+        <div class="relative pl-8 border-l-2 border-gray-300">
+            <div class="timeline-item mb-12 ml-4 active">
+                <h3 class="font-bold text-xl text-accent">1974: PDMS의 탄생</h3>
+                <p class="text-gray-600">세계 최초의 3D 플랜트 설계 시스템으로 시장에 혁신을 가져왔습니다.</p>
+            </div>
+            <div class="timeline-item mb-12 ml-4 active">
+                <h3 class="font-bold text-xl text-accent">2012: E3D의 등장</h3>
+                <p class="text-gray-600">차세대 기술과 데이터 중심 아키텍처를 탑재한 E3D가 출시되었습니다.</p>
+            </div>
+            <div class="timeline-item mb-12 ml-4 active">
+                <h3 class="font-bold text-xl text-red-600">2024: PDMS 지원 종료</h3>
+                <p class="text-gray-600">AVEVA는 PDMS의 판매 및 지원을 공식적으로 중단하며, E3D로의 전환을 필수 과제로 만들었습니다.</p>
+            </div>
+            <div class="timeline-item ml-4 active">
+                <h3 class="font-bold text-xl text-green-700">미래: 디지털 트윈 시대</h3>
+                <p class="text-gray-600">E3D는 EPC 4.0과 산업 디지털 트윈을 구현하는 핵심 기술로 자리매김하고 있습니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="comparison" class="mb-24">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold mb-3">세대적 도약: PDMS vs E3D 핵심 비교</h2>
+            <p class="text-gray-600">E3D는 모든 면에서 PDMS를 뛰어넘는 혁신을 보여줍니다. 아래 탭을 클릭하여 주요 차이점을 직접 확인해보세요.</p>
+        </div>
+        <div class="bg-secondary rounded-lg shadow-xl p-6 md:p-8">
+            <div id="tabs" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                <button class="tab-btn active" data-tab="architecture">아키텍처</button>
+                <button class="tab-btn" data-tab="ux">사용자 경험(UX)</button>
+                <button class="tab-btn" data-tab="performance">성능 & 데이터</button>
+                <button class="tab-btn" data-tab="laser">레이저 스캐닝</button>
+            </div>
+            <div id="tab-content">
+                <div data-content="architecture" class="grid md:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h4 class="font-bold text-xl mb-3">PDMS: 모놀리식 구조</h4>
+                        <ul class="space-y-2 text-gray-700">
+                            <li>❌ 온프레미스 중심의 폐쇄적 구조</li>
+                            <li>❌ 외부 시스템(ERP/PLM)과 통합 어려움</li>
+                            <li>❌ 클라우드 및 최신 IT 환경 지원 불가</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-xl mb-3 text-accent">E3D: 데이터 중심 개방형 구조</h4>
+                        <ul class="space-y-2 text-gray-700">
+                            <li>✅ 클라우드 네이티브 및 하이브리드 지원</li>
+                            <li>✅ 개방형 API로 뛰어난 상호운용성</li>
+                            <li>✅ 현대 디지털 생태계에 완벽히 통합</li>
+                        </ul>
+                    </div>
+                </div>
+                <div data-content="ux" class="hidden grid md:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h4 class="font-bold text-xl mb-3">PDMS: 구식 메뉴 기반 UI</h4>
+                        <ul class="space-y-2 text-gray-700">
+                            <li>❌ 복잡하고 비효율적인 워크플로우</li>
+                            <li>❌ 긴 학습 곡선과 낮은 생산성</li>
+                            <li>❌ 비사실적인 그래픽 표현</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-xl mb-3 text-accent">E3D: 현대적 그래픽 UI</h4>
+                        <ul class="space-y-2 text-gray-700">
+                            <li>✅ Microsoft Fluent™ 기반의 직관적 UI</li>
+                            <li>✅ PowerWheel 등 기능으로 클릭 최소화</li>
+                            <li>✅ 고성능 그래픽 엔진으로 사실적 시각화</li>
+                        </ul>
+                    </div>
+                </div>
+                <div data-content="performance" class="hidden grid md:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h4 class="font-bold text-xl mb-3">PDMS: 성능 한계</h4>
+                        <ul class="space-y-2 text-gray-700">
+                            <li>❌ 대규모 모델 처리 시 심각한 성능 저하</li>
+                            <li>❌ 네이티브 데이터 압축 기능 부재</li>
+                            <li>❌ 기하학적 정밀도: ±0.1 mm</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-xl mb-3 text-accent">E3D: 압도적 성능</h4>
+                        <ul class="space-y-2 text-gray-700">
+                            <li>✅ LZ77 압축으로 40% 빠른 모델 로딩</li>
+                            <li>✅ 메가 프로젝트도 원활하게 처리</li>
+                            <li>✅ 10배 향상된 정밀도: ±0.01 mm</li>
+                        </ul>
+                    </div>
+                </div>
+                <div data-content="laser" class="hidden grid md:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h4 class="font-bold text-xl mb-3">PDMS: 제한적 지원</h4>
+                        <ul class="space-y-2 text-gray-700">
+                            <li>❌ 비네이티브 방식으로 번거로운 작업</li>
+                            <li>❌ 현황("as-is") 모델링에 막대한 비용 소요</li>
+                            <li>❌ 브라운필드 프로젝트의 걸림돌</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-xl mb-3 text-accent">E3D: 네이티브 통합 (게임 체인저)</h4>
+                        <ul class="space-y-2 text-gray-700">
+                            <li>✅ 포인트 클라우드를 설계 환경에 직접 통합</li>
+                            <li>✅ HyperBubble™ 뷰로 몰입형 작업 가능</li>
+                            <li>✅ 브라운필드 프로젝트 ROI 극대화</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12">
+                <h3 class="text-xl font-bold text-center mb-6">기능 종합 비교</h3>
+                <div class="chart-container">
+                    <canvas id="comparisonRadarChart"></canvas>
+                </div>
+                <p class="text-sm text-gray-500 text-center mt-4">PDMS의 역량을 1점으로 기준했을 때, E3D는 아키텍처, 레이저 스캔 지원, 사용자 경험 등 모든 핵심 영역에서 세대적 도약을 이루었음을 명확히 보여줍니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="roi" class="mb-24">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold mb-3">측정 가능한 비즈니스 가치</h2>
+            <p class="text-gray-600">E3D로의 전환은 추상적인 개념이 아닌, 명확하게 정량화된 투자 수익(ROI)으로 이어집니다. 실제 고객 사례가 이를 증명합니다.</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-secondary rounded-lg shadow-xl p-6 md:p-8">
+                <h3 class="text-xl font-bold mb-4">프로젝트 효율성 향상 지표</h3>
+                <div class="chart-container">
+                    <canvas id="efficiencyBarChart"></canvas>
+                </div>
+                <p class="text-sm text-gray-500 mt-4">E3D는 설계 오류 감소, 재작업 최소화, 정확한 물량 산출을 통해 프로젝트 전반의 비용을 절감하고 납기를 단축시키는 직접적인 효과를 제공합니다.</p>
+            </div>
+            <div class="bg-secondary rounded-lg shadow-xl p-6 md:p-8">
+                <h3 class="text-xl font-bold mb-4">고객 성공 사례: Hanla NMT</h3>
+                <div class="chart-container flex items-center justify-center">
+                    <canvas id="customerDonutChart"></canvas>
+                </div>
+                <p class="text-sm text-gray-500 mt-4">국내 조선 기자재 업체 한라 NMT는 E3D의 네이티브 레이저 스캔 기능을 활용하여, 기존 설비의 "As-Is" 모델링 비용을 완전히 제거하고 프로젝트 기획 및 설계 시간을 30% 단축했습니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="ecosystem" class="mb-24">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold mb-3">단일 도구를 넘어 통합 플랫폼으로</h2>
+            <p class="text-gray-600">E3D의 진정한 가치는 AVEVA의 거대한 데이터 중심 생태계의 일부라는 점에서 나옵니다. 이는 설계부터 운영까지 자산의 전 생애주기를 연결하는 디지털 트윈의 초석입니다.</p>
+        </div>
+        <div class="bg-secondary rounded-lg shadow-xl p-6 md:p-8">
+            <div class="flex flex-col md:flex-row items-center justify-around gap-4">
+                <div class="flow-box">다분야 설계<br>(P&ID, 전기, 계장)</div>
+                <div class="flow-arrow">➡️</div>
+                <div class="flow-box highlight">AVEVA E3D Design<br>(3D 상세설계)</div>
+                <div class="flow-arrow">➡️</div>
+                <div class="flow-box">AVEVA Unified Engineering</div>
+            </div>
+            <div class="flex justify-center my-4">
+                <div class="flow-arrow">⬇️</div>
+            </div>
+            <div class="flex justify-center">
+                <div class="flow-box highlight w-full md:w-1/2">포괄적인 산업 디지털 트윈</div>
+            </div>
+            <p class="text-center mt-6 text-gray-600">E3D에서 생성된 지능형 3D 모델은 AVEVA의 다른 솔루션과 결합하여, 설계-조달-건설-운영을 아우르는 살아있는 디지털 트윈을 구축하고, 예측 유지보수 및 성과 기반 서비스와 같은 새로운 비즈니스 모델을 가능하게 합니다.</p>
+        </div>
+    </section>
+
+    <section id="recommendation" class="bg-accent text-white rounded-lg shadow-xl p-8 md:p-12">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold">전략적 권고: 다음 단계로 나아가기</h2>
+            <p class="mt-2 text-gray-300">PDMS에서 E3D로의 전환은 기술적 필연성을 넘어, 미래 비즈니스를 위한 전략적 투자입니다.</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-2xl font-bold mb-4">기존 PDMS 사용자</h3>
+                <ul class="space-y-3 list-disc list-inside text-gray-200">
+                    <li><strong>즉시 행동:</strong> 지원이 중단된 소프트웨어의 리스크를 완화하기 위해 지금 바로 마이그레이션 계획에 착수하십시오.</li>
+                    <li><strong>철저한 감사:</strong> 기존 데이터와 특히 PML 사용자화 코드를 감사하여 전환 범위를 명확히 하십시오.</li>
+                    <li><strong>변화 관리 투자:</strong> 성공적인 전환의 핵심은 기술이 아닌 사람입니다. 포괄적인 교육과 내부 챔피언 육성에 투자하십시오.</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-2xl font-bold mb-4">신규 도입 고려 기업</h3>
+                <ul class="space-y-3 list-disc list-inside text-gray-200">
+                    <li><strong>플랫폼 평가:</strong> 단일 제품이 아닌, AVEVA의 전체 생태계가 조직의 장기적인 데이터 전략과 어떻게 부합하는지 평가하십시오.</li>
+                    <li><strong>브라운필드 역량 중시:</strong> 개조/증설 프로젝트가 많다면, E3D의 검증된 레이저 스캐닝 통합 기능에 높은 가중치를 부여하십시오.</li>
+                    <li><strong>TCO 분석:</strong> 구독 모델의 총소유비용(TCO)을 경쟁사 모델과 5-10년 기간에 걸쳐 비교 분석하십시오.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="text-center py-8 border-t">
+    <p class="text-gray-500">본 인터랙티브 분석 자료는 제공된 'AVEVA PDMS 및 E3D 비교 분석' 보고서를 기반으로 제작되었습니다.</p>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const chartFontColor = '#3C3C3C';
+        const gridColor = 'rgba(0, 0, 0, 0.05)';
+        const accentColors = ['#4A5C6A', '#6B7A88', '#8D9AAA', '#BCC4CC', '#D1D5DB'];
+
+        const tooltipTitleCallback = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            return Array.isArray(label) ? label.join(' ') : label;
+                        }
+                    }
+                },
+                legend: {
+                    labels: {
+                        color: chartFontColor,
+                        font: { size: 12 }
+                    }
+                }
+            }
+        };
+
+        function wrapLabels(label, maxWidth) {
+            if (typeof label !== 'string' || label.length <= maxWidth) return label;
+            const words = label.split(' ');
+            let currentLine = '';
+            const lines = [];
+            words.forEach(word => {
+                const testLine = currentLine.length > 0 ? `${currentLine} ${word}` : word;
+                if (testLine.length > maxWidth && currentLine.length > 0) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = testLine;
+                }
+            });
+            lines.push(currentLine);
+            return lines;
+        }
+
+        const radarCtx = document.getElementById('comparisonRadarChart');
+        if(radarCtx) {
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['아키텍처', ['레이저 스캔', '지원'], '사용자 경험', '상호운용성', '성능', ['생태계', '통합']],
+                    datasets: [{
+                        label: 'E3D Design',
+                        data: [5, 5, 4.5, 4.5, 4, 5],
+                        fill: true,
+                        backgroundColor: 'rgba(74, 92, 106, 0.2)',
+                        borderColor: '#4A5C6A',
+                        pointBackgroundColor: '#4A5C6A',
+                    }, {
+                        label: 'PDMS',
+                        data: [1, 1, 2, 2, 2.5, 1.5],
+                        fill: true,
+                        backgroundColor: 'rgba(209, 213, 219, 0.2)',
+                        borderColor: '#D1D5DB',
+                        pointBackgroundColor: '#D1D5DB',
+                    }]
+                },
+                options: {
+                    ...tooltipTitleCallback,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: gridColor },
+                            grid: { color: gridColor },
+                            pointLabels: { color: chartFontColor, font: { size: 14 } },
+                            ticks: {
+                                backdropColor: 'rgba(0,0,0,0)',
+                                color: chartFontColor,
+                                stepSize: 1,
+                                max: 5,
+                                min: 0
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        const barCtx = document.getElementById('efficiencyBarChart');
+        if(barCtx) {
+            const barLabels = ['엔지니어링 공수 절감', '재작업 및 오류 감소', '자재 물량 절감', '설계 시간 단축'];
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: barLabels.map(l => wrapLabels(l, 14)),
+                    datasets: [{
+                        label: '최대 절감 효과 (%)',
+                        data: [40, 70, 30, 40],
+                        backgroundColor: accentColors,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    ...tooltipTitleCallback,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: chartFontColor } },
+                        y: { grid: { display: false }, ticks: { color: chartFontColor } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        const donutCtx = document.getElementById('customerDonutChart');
+        if(donutCtx) {
+            new Chart(donutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['프로젝트 시간 절약', '기존 소요 시간'],
+                    datasets: [{ data: [30, 70], backgroundColor: ['#4A5C6A', '#E6E9EB'], borderColor: '#FFFFFF', borderWidth: 4 }]
+                },
+                options: {
+                    ...tooltipTitleCallback,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        ...tooltipTitleCallback.plugins,
+                        title: {
+                            display: true,
+                            text: '설계/기획 30% 시간 절약',
+                            color: chartFontColor,
+                            font: { size: 16, weight: 'bold' },
+                            padding: { top: 10, bottom: 20 }
+                        }
+                    }
+                }
+            });
+        }
+
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('[data-content]');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const target = tab.dataset.tab;
+                contents.forEach(content => {
+                    if (content.dataset.content === target) {
+                        content.classList.remove('hidden');
+                    } else {
+                        content.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    });
+</script>
+</body>
+</html>
