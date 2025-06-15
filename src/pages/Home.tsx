@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { loadMetadata } from '../utils/metadataManager'
 import type { FileMetadata } from '../types/metadata'
+import FileCard from '../components/FileCard'
 
 const Home: React.FC = () => {
   const [files, setFiles] = useState<FileMetadata[]>([])
@@ -68,30 +69,18 @@ const Home: React.FC = () => {
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">
               Claude ({claudeFiles.length}개)
             </h2>
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="space-y-4">
               {claudeFiles.length > 0 ? (
-                <ul className="space-y-4">
-                  {claudeFiles.map(file => (
-                    <li key={file.id} className="border-b pb-4 last:border-b-0">
-                      <h3 className="font-semibold text-gray-800">{file.title}</h3>
-                      <p className="text-sm text-gray-600 mt-1">{file.filename}</p>
-                      {file.description && (
-                        <p className="text-sm text-gray-500 mt-2">{file.description}</p>
-                      )}
-                      {file.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {file.tags.map(tag => (
-                            <span key={tag} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                claudeFiles.map(file => (
+                  <FileCard 
+                    key={file.id} 
+                    file={file}
+                  />
+                ))
               ) : (
-                <p className="text-gray-500">Claude 파일이 없습니다.</p>
+                <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
+                  <p className="text-gray-500">Claude 파일이 없습니다.</p>
+                </div>
               )}
             </div>
           </div>
@@ -101,30 +90,18 @@ const Home: React.FC = () => {
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">
               Gemini ({geminiFiles.length}개)
             </h2>
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="space-y-4">
               {geminiFiles.length > 0 ? (
-                <ul className="space-y-4">
-                  {geminiFiles.map(file => (
-                    <li key={file.id} className="border-b pb-4 last:border-b-0">
-                      <h3 className="font-semibold text-gray-800">{file.title}</h3>
-                      <p className="text-sm text-gray-600 mt-1">{file.filename}</p>
-                      {file.description && (
-                        <p className="text-sm text-gray-500 mt-2">{file.description}</p>
-                      )}
-                      {file.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {file.tags.map(tag => (
-                            <span key={tag} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                geminiFiles.map(file => (
+                  <FileCard 
+                    key={file.id} 
+                    file={file}
+                  />
+                ))
               ) : (
-                <p className="text-gray-500">Gemini 파일이 없습니다.</p>
+                <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
+                  <p className="text-gray-500">Gemini 파일이 없습니다.</p>
+                </div>
               )}
             </div>
           </div>
